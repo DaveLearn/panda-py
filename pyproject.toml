@@ -57,10 +57,6 @@ build = [ "cp37-*", "cp38-*", "cp39-*", "cp310-*", "cp311-*", "cp312-*",]
 skip = [ "pp*", "*musllinux*",]
 environment = "LIBFRANKA_VER=0.9.2"
 
-[tool.cibuildwheel.linux]
-before-all = [ "./bin/before_install_centos.sh",]
-archs = [ "x86_64",]
-
 [tool.scikit-build.cmake]
 build-type = "Release"
 
