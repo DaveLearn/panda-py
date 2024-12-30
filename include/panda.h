@@ -9,17 +9,30 @@
 
 #include <mutex>
 #include <thread>
+#include <array>
 
 #include "controllers/controller.h"
 #include "controllers/joint_limits/virtual_wall_controller.h"
 #include "controllers/joint_trajectory.h"
 #include "controllers/cartesian_trajectory.h"
 #include "controllers/applied_torque.h"
+
+#include "motion/joint_motion.hpp"
+#include "motion/motion_data.hpp"
+
 #include "utils.h"
 
 namespace py = pybind11;
 
 class Panda;
+namespace motion {
+    class Generator;
+    class JointGenerator;
+    class CartesianGenerator;
+    class JointMotionGenerator;
+    class CartesianMotionGenerator;
+    
+};
 
 class PandaContext {
  public:
@@ -40,9 +53,39 @@ class PandaContext {
 };
 
 class Panda {
+ friend class motion::Generator;
+ friend class motion::JointGenerator;
+ friend class motion::JointMotionGenerator;
+ friend class motion::CartesianGenerator;
+ friend class motion::CartesianMotionGenerator;
+
  public:
+
+  // Cartesian constraints
+  static constexpr double max_translation_velocity {1.7}; // [m/s]
+  static constexpr double max_rotation_velocity {2.5}; // [rad/s]
+  static constexpr double max_elbow_velocity {2.175}; // [rad/s]
+  static constexpr double max_translation_acceleration {13.0}; // [m/s²]
+  static constexpr double max_rotation_acceleration {25.0}; // [rad/s²]
+  static constexpr double max_elbow_acceleration {10.0}; // [rad/s²]
+  static constexpr double max_translation_jerk {6500.0}; // [m/s³]
+  static constexpr double max_rotation_jerk {12500.0}; // [rad/s³]
+  static constexpr double max_elbow_jerk {5000.0}; // [rad/s³]
+  
+  // Joint constraints
+  static constexpr std::array<double, 7> max_joint_velocity {{2.175, 2.175, 2.175, 2.175, 2.610, 2.610, 2.610}}; // [rad/s]
+  static constexpr std::array<double, 7> max_joint_acceleration {{15.0, 7.5, 10.0, 12.5, 15.0, 20.0, 20.0}}; // [rad/s²]
+  static constexpr std::array<double, 7> max_joint_jerk {{7500.0, 3750.0, 5000.0, 6250.0, 7500.0, 10000.0, 10000.0}}; // [rad/s^3]
+  
+  static constexpr size_t degrees_of_freedoms {7};
+  static constexpr double control_rate {0.001}; // [s]
+
   static const double kMoveToJointPositionThreshold;
   static const Vector7d kDefaultTeachingDamping;
+
+
+  double velocity_rel {1.0}, acceleration_rel {1.0}, jerk_rel {1.0};
+
   Panda(
       std::string hostname, std::string name = "panda",
       franka::RealtimeConfig realtime_config = franka::RealtimeConfig::kIgnore);
@@ -54,63 +97,18 @@ class Panda {
   franka::RobotState getState();
   void startController(std::shared_ptr<TorqueController> controller);
   void stopController();
+
+  void startGenerator(std::shared_ptr<motion::Generator> generator);
+  void stopGenerator();
+
   void enableLogging(size_t buffer_size);
   void disableLogging();
   std::map<std::string, std::list<Eigen::VectorXd>> getLog();
-  bool moveToJointPosition(
-      const Vector7d &position,
-      double speed_factor = motion::kDefaultJointSpeedFactor,
-      const Vector7d &stiffness = controllers::JointTrajectory::kDefaultStiffness,
-      const Vector7d &damping = controllers::JointTrajectory::kDefaultDamping,
-      double dq_threshold = controllers::JointTrajectory::kDefaultDqThreshold,
-      double success_threshold = kMoveToJointPositionThreshold);
-  bool moveToJointPosition(
-      std::vector<Vector7d> &waypoints,
-      double speed_factor = motion::kDefaultJointSpeedFactor,
-      const Vector7d &stiffness = controllers::JointTrajectory::kDefaultStiffness,
-      const Vector7d &damping = controllers::JointTrajectory::kDefaultDamping,
-      double dq_threshold = controllers::JointTrajectory::kDefaultDqThreshold,
-      double success_threshold = kMoveToJointPositionThreshold);
-  bool moveToPose(
-      std::vector<Eigen::Vector3d> &positions,
-      std::vector<Eigen::Matrix<double, 4, 1>> &orientations,
-      double speed_factor = motion::kDefaultCartesianSpeedFactor,
-      const Eigen::Matrix<double, 6, 6> &impedance = controllers::CartesianTrajectory::kDefaultImpedance,
-      const double &damping_ratio = controllers::CartesianTrajectory::kDefaultDampingRatio,
-      const double &nullspace_stiffness = controllers::CartesianTrajectory::kDefaultNullspaceStiffness,
-      double dq_threshold = controllers::CartesianTrajectory::kDefaultDqThreshold,
-      double success_threshold = kMoveToJointPositionThreshold);
-  bool moveToPose(
-      const Eigen::Vector3d &position,
-      const Eigen::Matrix<double, 4, 1> &orientation,
-      double speed_factor = motion::kDefaultCartesianSpeedFactor,
-      const Eigen::Matrix<double, 6, 6> &impedance = controllers::CartesianTrajectory::kDefaultImpedance,
-      const double &damping_ratio = controllers::CartesianTrajectory::kDefaultDampingRatio,
-      const double &nullspace_stiffness = controllers::CartesianTrajectory::kDefaultNullspaceStiffness,
-      double dq_threshold = controllers::CartesianTrajectory::kDefaultDqThreshold,
-      double success_threshold = kMoveToJointPositionThreshold);
-  bool moveToPose(
-      const std::vector<Eigen::Matrix<double, 4, 4>> &poses,
-      double speed_factor = motion::kDefaultCartesianSpeedFactor,
-      const Eigen::Matrix<double, 6, 6> &impedance = controllers::CartesianTrajectory::kDefaultImpedance,
-      const double &damping_ratio = controllers::CartesianTrajectory::kDefaultDampingRatio,
-      const double &nullspace_stiffness = controllers::CartesianTrajectory::kDefaultNullspaceStiffness,
-      double dq_threshold = controllers::CartesianTrajectory::kDefaultDqThreshold,
-      double success_threshold = kMoveToJointPositionThreshold);
-  bool moveToPose(
-      const Eigen::Matrix<double, 4, 4> &pose,
-      double speed_factor = motion::kDefaultCartesianSpeedFactor,
-      const Eigen::Matrix<double, 6, 6> &impedance = controllers::CartesianTrajectory::kDefaultImpedance,
-      const double &damping_ratio = controllers::CartesianTrajectory::kDefaultDampingRatio,
-      const double &nullspace_stiffness = controllers::CartesianTrajectory::kDefaultNullspaceStiffness,
-      double dq_threshold = controllers::CartesianTrajectory::kDefaultDqThreshold,
-      double success_threshold = kMoveToJointPositionThreshold);
-  bool moveToStart(
-      double speed_factor = motion::kDefaultJointSpeedFactor,
-      const Vector7d &stiffness = controllers::JointTrajectory::kDefaultStiffness,
-      const Vector7d &damping = controllers::JointTrajectory::kDefaultDamping,
-      double dq_threshold = controllers::JointTrajectory::kDefaultDqThreshold,
-      double success_threshold = kMoveToJointPositionThreshold);
+
+  void stop();
+//   void stopMotion();
+  void joinMotionThread();
+
   Eigen::Vector3d getPosition();
   Eigen::Vector4d getOrientation(bool scalar_first = false);
   Eigen::Vector4d getOrientationScalarLast();
@@ -127,15 +125,22 @@ class Panda {
  private:
   void _startController(std::shared_ptr<TorqueController> controller);
   void _runController(TorqueCallback &control);
+
+  
   void _setState(const franka::RobotState &state);
   template <typename... Args>
   void _log(const std::string level, Args &&...args);
+
   TorqueCallback _createTorqueCallback();
+
   std::shared_ptr<franka::Robot> robot_;
   std::shared_ptr<franka::Model> model_;
   franka::RobotState state_;
   std::mutex mux_;
+
   std::shared_ptr<TorqueController> current_controller_;
+  std::shared_ptr<motion::Generator> current_generator_;
+
   std::thread current_thread_;
   std::shared_ptr<controllers::joint_limits::VirtualWallController>
       virtual_walls_;

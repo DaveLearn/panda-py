@@ -7,6 +7,7 @@ project(
 set (CMAKE_CXX_STANDARD 17)
 set(CMAKE_BUILD_TYPE "Release")
 set(THREADS_PREFER_PTHREAD_FLAG ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 option(VACUUM_GRIPPER OFF)
 if (VACUUM_GRIPPER)
@@ -16,6 +17,8 @@ endif()
 find_package(Eigen3 REQUIRED)
 find_package(Threads REQUIRED)
 find_package(Franka REQUIRED)
+find_package(ruckig REQUIRED)
+
 find_package(
   Python
   COMPONENTS Interpreter Development.Module
@@ -38,11 +41,14 @@ pybind11_add_module(_core
   src/motion/generators.cpp
   src/motion/time_optimal/trajectory.cpp
   src/motion/time_optimal/path.cpp
+
+  # src/generators/joint_position.cpp
 )
 
 target_link_libraries(_core PUBLIC
   Threads::Threads
   ${Franka_LIBRARIES}
+  ruckig::ruckig
 )
 
 target_include_directories(_core SYSTEM PUBLIC

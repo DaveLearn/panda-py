@@ -6,6 +6,7 @@
 #include <Eigen/Dense>
 #include <cmath>  // for std::abs
 #include "constants.h"
+#include <array>
 
 typedef Eigen::Matrix<double, 6, 1> Vector6d;
 typedef Eigen::Matrix<double, 7, 1> Vector7d;
@@ -15,6 +16,7 @@ template <typename ReturnType>
 using Callback =
     std::function<ReturnType(const franka::RobotState&, franka::Duration)>;
 typedef Callback<franka::Torques> TorqueCallback;
+typedef Callback<franka::JointPositions> JointPositionCallback; 
 
 template <int T>
 inline Eigen::Matrix<double, T, 1> ArrayToVector(
@@ -125,3 +127,10 @@ inline double ema_filter<double>(const double& value_f, const double& value,
   }
   return alpha * value + (1 - alpha) * value_f;
 }
+
+inline std::array<double, 7> toStd(const Vector7d& vector) {
+    std::array<double, 7> result;
+    Vector7d::Map(result.data()) = vector;
+    return result;
+}
+

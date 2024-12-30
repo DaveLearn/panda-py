@@ -7,6 +7,9 @@ class CartesianPose:
     O_T_EE: typing.Annotated[list[float], pybind11_stubgen.typing_ext.FixedSize(16)]
     elbow: typing.Annotated[list[float], pybind11_stubgen.typing_ext.FixedSize(2)]
     motion_finished: bool
+    @staticmethod
+    def _pybind11_conduit_v1_(*args, **kwargs):
+        ...
     @typing.overload
     def __init__(self, cartesian_pose: typing.Annotated[list[float], pybind11_stubgen.typing_ext.FixedSize(16)]) -> None:
         ...
@@ -17,6 +20,9 @@ class CartesianVelocities:
     O_dP_EE: typing.Annotated[list[float], pybind11_stubgen.typing_ext.FixedSize(6)]
     elbow: typing.Annotated[list[float], pybind11_stubgen.typing_ext.FixedSize(2)]
     motion_finished: bool
+    @staticmethod
+    def _pybind11_conduit_v1_(*args, **kwargs):
+        ...
     @typing.overload
     def __init__(self, cartesian_velocities: typing.Annotated[list[float], pybind11_stubgen.typing_ext.FixedSize(6)]) -> None:
         ...
@@ -34,6 +40,9 @@ class ControllerMode:
     __members__: typing.ClassVar[dict[str, ControllerMode]]  # value = {'kCartesianImpedance': <ControllerMode.kCartesianImpedance: 1>, 'kJointImpedance': <ControllerMode.kJointImpedance: 0>}
     kCartesianImpedance: typing.ClassVar[ControllerMode]  # value = <ControllerMode.kCartesianImpedance: 1>
     kJointImpedance: typing.ClassVar[ControllerMode]  # value = <ControllerMode.kJointImpedance: 0>
+    @staticmethod
+    def _pybind11_conduit_v1_(*args, **kwargs):
+        ...
     def __eq__(self, other: typing.Any) -> bool:
         ...
     def __getstate__(self) -> int:
@@ -61,6 +70,9 @@ class ControllerMode:
     def value(self) -> int:
         ...
 class Duration:
+    @staticmethod
+    def _pybind11_conduit_v1_(*args, **kwargs):
+        ...
     @typing.overload
     def __init__(self) -> None:
         ...
@@ -75,6 +87,9 @@ class Duration:
     def to_sec(self) -> float:
         ...
 class Errors:
+    @staticmethod
+    def _pybind11_conduit_v1_(*args, **kwargs):
+        ...
     def __bool__(self) -> bool:
         ...
     def __init__(self) -> None:
@@ -227,6 +242,9 @@ class Frame:
     kJoint6: typing.ClassVar[Frame]  # value = <Frame.kJoint6: 5>
     kJoint7: typing.ClassVar[Frame]  # value = <Frame.kJoint7: 6>
     kStiffness: typing.ClassVar[Frame]  # value = <Frame.kStiffness: 9>
+    @staticmethod
+    def _pybind11_conduit_v1_(*args, **kwargs):
+        ...
     def __eq__(self, other: typing.Any) -> bool:
         ...
     def __getstate__(self) -> int:
@@ -254,6 +272,9 @@ class Frame:
     def value(self) -> int:
         ...
 class Gripper:
+    @staticmethod
+    def _pybind11_conduit_v1_(*args, **kwargs):
+        ...
     def __init__(self, franka_address: str) -> None:
         ...
     def grasp(self, width: float, speed: float, force: float, epsilon_inner: float = 0.005, epsilon_outer: float = 0.005) -> bool:
@@ -269,6 +290,9 @@ class Gripper:
     def stop(self) -> bool:
         ...
 class GripperState:
+    @staticmethod
+    def _pybind11_conduit_v1_(*args, **kwargs):
+        ...
     @property
     def is_grasped(self) -> bool:
         ...
@@ -287,14 +311,23 @@ class GripperState:
 class JointPositions:
     motion_finished: bool
     q: typing.Annotated[list[float], pybind11_stubgen.typing_ext.FixedSize(7)]
+    @staticmethod
+    def _pybind11_conduit_v1_(*args, **kwargs):
+        ...
     def __init__(self, joint_positions: typing.Annotated[list[float], pybind11_stubgen.typing_ext.FixedSize(7)]) -> None:
         ...
 class JointVelocities:
     dq: typing.Annotated[list[float], pybind11_stubgen.typing_ext.FixedSize(7)]
     motion_finished: bool
+    @staticmethod
+    def _pybind11_conduit_v1_(*args, **kwargs):
+        ...
     def __init__(self, joint_velocities: typing.Annotated[list[float], pybind11_stubgen.typing_ext.FixedSize(7)]) -> None:
         ...
 class Model:
+    @staticmethod
+    def _pybind11_conduit_v1_(*args, **kwargs):
+        ...
     @typing.overload
     def body_jacobian(self, frame: Frame, robot_state: RobotState) -> typing.Annotated[list[float], pybind11_stubgen.typing_ext.FixedSize(42)]:
         ...
@@ -342,6 +375,9 @@ class RealtimeConfig:
     __members__: typing.ClassVar[dict[str, RealtimeConfig]]  # value = {'kEnforce': <RealtimeConfig.kEnforce: 0>, 'kIgnore': <RealtimeConfig.kIgnore: 1>}
     kEnforce: typing.ClassVar[RealtimeConfig]  # value = <RealtimeConfig.kEnforce: 0>
     kIgnore: typing.ClassVar[RealtimeConfig]  # value = <RealtimeConfig.kIgnore: 1>
+    @staticmethod
+    def _pybind11_conduit_v1_(*args, **kwargs):
+        ...
     def __eq__(self, other: typing.Any) -> bool:
         ...
     def __getstate__(self) -> int:
@@ -369,6 +405,9 @@ class RealtimeConfig:
     def value(self) -> int:
         ...
 class Robot:
+    @staticmethod
+    def _pybind11_conduit_v1_(*args, **kwargs):
+        ...
     def __init__(self, franka_address: str, realtime_config: RealtimeConfig = RealtimeConfig.kIgnore, log_size: int = 50) -> None:
         ...
     def automatic_error_recovery(self) -> None:
@@ -429,6 +468,9 @@ class RobotMode:
     kOther: typing.ClassVar[RobotMode]  # value = <RobotMode.kOther: 0>
     kReflex: typing.ClassVar[RobotMode]  # value = <RobotMode.kReflex: 4>
     kUserStopped: typing.ClassVar[RobotMode]  # value = <RobotMode.kUserStopped: 5>
+    @staticmethod
+    def _pybind11_conduit_v1_(*args, **kwargs):
+        ...
     def __eq__(self, other: typing.Any) -> bool:
         ...
     def __getstate__(self) -> int:
@@ -456,6 +498,9 @@ class RobotMode:
     def value(self) -> int:
         ...
 class RobotState:
+    @staticmethod
+    def _pybind11_conduit_v1_(*args, **kwargs):
+        ...
     def __repr__(self) -> str:
         ...
     @property
@@ -593,9 +638,15 @@ class RobotState:
 class Torques:
     motion_finished: bool
     tau_J: typing.Annotated[list[float], pybind11_stubgen.typing_ext.FixedSize(7)]
+    @staticmethod
+    def _pybind11_conduit_v1_(*args, **kwargs):
+        ...
     def __init__(self, torques: typing.Annotated[list[float], pybind11_stubgen.typing_ext.FixedSize(7)]) -> None:
         ...
 class VacuumGripper:
+    @staticmethod
+    def _pybind11_conduit_v1_(*args, **kwargs):
+        ...
     def __init__(self, franka_address: str) -> None:
         ...
     def drop_off(self, timeout: datetime.timedelta) -> bool:
@@ -625,6 +676,9 @@ class VacuumGripperDeviceStatus:
     kOrange: typing.ClassVar[VacuumGripperDeviceStatus]  # value = <VacuumGripperDeviceStatus.kOrange: 2>
     kRed: typing.ClassVar[VacuumGripperDeviceStatus]  # value = <VacuumGripperDeviceStatus.kRed: 3>
     kYellow: typing.ClassVar[VacuumGripperDeviceStatus]  # value = <VacuumGripperDeviceStatus.kYellow: 1>
+    @staticmethod
+    def _pybind11_conduit_v1_(*args, **kwargs):
+        ...
     def __eq__(self, other: typing.Any) -> bool:
         ...
     def __getstate__(self) -> int:
@@ -668,6 +722,9 @@ class VacuumGripperProductionSetupProfile:
     kP1: typing.ClassVar[VacuumGripperProductionSetupProfile]  # value = <VacuumGripperProductionSetupProfile.kP1: 1>
     kP2: typing.ClassVar[VacuumGripperProductionSetupProfile]  # value = <VacuumGripperProductionSetupProfile.kP2: 2>
     kP3: typing.ClassVar[VacuumGripperProductionSetupProfile]  # value = <VacuumGripperProductionSetupProfile.kP3: 3>
+    @staticmethod
+    def _pybind11_conduit_v1_(*args, **kwargs):
+        ...
     def __eq__(self, other: typing.Any) -> bool:
         ...
     def __getstate__(self) -> int:
@@ -695,6 +752,9 @@ class VacuumGripperProductionSetupProfile:
     def value(self) -> int:
         ...
 class VacuumGripperState:
+    @staticmethod
+    def _pybind11_conduit_v1_(*args, **kwargs):
+        ...
     @property
     def actual_power(self) -> int:
         ...

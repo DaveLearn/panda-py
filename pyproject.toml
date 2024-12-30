@@ -7,7 +7,10 @@ name = "panda-python"
 version = "0.8.1"
 description = "Python bindings for the Panda robot"
 requires-python = ">=3.7"
-dependencies = ["websockets>=11.0", "requests", "numpy"]
+dependencies = [
+    "numpy",
+    "trio"
+    ]
 authors = [
     { name = "Jean Elsner", email = "jean.elsner@tum.de" },
 ]
@@ -29,33 +32,19 @@ classifiers = [
 
 [project.optional-dependencies]
 examples = [
-    "roboticstoolbox-python",
-    "matplotlib",
-    "spatialmath-python",
-    "ansitable",
-    "qpsolvers",
-]
-docs = [
-    "furo",
-    "sphinx-reredirects",
-    "sphinx",
-]
-dev = [
-    "pybind11-stubgen",
+    "gello@git+https://github.com/jc211/gello.git"
 ]
 
-[project.scripts]
-panda-lock = "panda_py.cli:lock"
-panda-unlock = "panda_py.cli:unlock"
-panda-reboot = "panda_py.cli:reboot"
-panda-take-control = "panda_py.cli:take_control"
-panda-release-control = "panda_py.cli:release_control"
 
 [tool.cibuildwheel]
 manylinux-x86_64-image = "manylinux2014"
 build = [ "cp37-*", "cp38-*", "cp39-*", "cp310-*", "cp311-*", "cp312-*",]
 skip = [ "pp*", "*musllinux*",]
-environment = "LIBFRANKA_VER=0.9.2"
+environment = "LIBFRANKA_VER=0.13.3"
+
+[tool.cibuildwheel.linux]
+before-all = [ "./bin/before_install_centos.sh",]
+archs = [ "x86_64",]
 
 [tool.scikit-build.cmake]
 build-type = "Release"
@@ -65,3 +54,26 @@ packages = ["src/panda_py"]
 
 [tool.scikit-build.cmake.define]
 VACUUM_GRIPPER = "ON"
+
+[tool.pixi.project]
+channels = ["jc211", "conda-forge"]
+platforms = ["linux-64"]
+
+[tool.pixi.dependencies]
+eigen = "*"
+python = ">=3.10, <3.13"
+libfranka = {version = "*", channel="jc211"}
+ruckig = {version = "*", channel="jc211"}
+
+[tool.pixi.build-dependencies]
+cmake = "~=3.24"
+pip = "*"
+pybind11 = "*"
+pybind11-stubgen = "*"
+
+[tool.pixi.pypi-dependencies]
+panda_python = { path = ".", editable = true }
+
+[tool.pixi.environments]
+default = {features = [], solve-group = "default"}
+examples = {features = ["examples"], solve-group = "default"}
