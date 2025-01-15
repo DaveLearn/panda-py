@@ -56,6 +56,7 @@ struct Generator {
       panda_->_log("error", "Control loop interruped: %s", e.what());
       panda_->last_error_ = std::make_shared<franka::Exception>(e);
     }
+    panda_->moving_ = false;
 
     if (done_callback_) {
       try {

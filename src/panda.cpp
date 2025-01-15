@@ -95,6 +95,7 @@ Panda::Panda(std::string hostname, std::string name,
 {
   py::object logging = py::module_::import("logging");
   logger_ = logging.attr("getLogger")(name);
+  moving_ = false;
   py::gil_scoped_release release;
   robot_ = std::shared_ptr<franka::Robot>(
       new franka::Robot(hostname, realtime_config));
@@ -127,6 +128,7 @@ franka::Model &Panda::getModel() { return *model_; }
 
 franka::RobotState Panda::getState()
 {
+  refreshState();
   std::lock_guard<std::mutex> lock(mux_);
   return state_;
 }
@@ -186,6 +188,7 @@ std::map<std::string, std::list<Eigen::VectorXd>> Panda::getLog()
 
 Eigen::Vector3d Panda::getPosition()
 {
+  refreshState();
   std::lock_guard<std::mutex> lock(mux_);
   Eigen::Affine3d transform(Eigen::Matrix4d::Map(state_.O_T_EE.data()));
   Eigen::Vector3d position(transform.translation());
@@ -203,6 +206,7 @@ Eigen::Vector4d Panda::getOrientation(bool scalar_first)
 
 Eigen::Vector4d Panda::getOrientationScalarLast()
 {
+  refreshState();
   std::lock_guard<std::mutex> lock(mux_);
   Eigen::Affine3d transform(Eigen::Matrix4d::Map(state_.O_T_EE.data()));
   Eigen::Quaterniond orientation(transform.rotation());
@@ -221,12 +225,14 @@ Eigen::Vector4d Panda::getOrientationScalarFirst()
 
 Vector7d Panda::getJointPositions()
 {
+  refreshState();
   std::lock_guard<std::mutex> lock(mux_);
   return Eigen::Map<Vector7d>(state_.q.data());
 }
 
 Eigen::Matrix4d Panda::getPose()
 {
+  refreshState();
   std::lock_guard<std::mutex> lock(mux_);
   return Eigen::Matrix4d::Map(state_.O_T_EE.data());
 }
@@ -247,6 +253,7 @@ void Panda::_setState(const franka::RobotState &state)
 }
 void Panda::startGenerator(std::shared_ptr<motion::Generator> generator_ptr)
 {
+  moving_ = true;
   stopGenerator();
   recover();
   _log("info", "Starting new generator (%s).", generator_ptr->name());
@@ -268,6 +275,7 @@ void Panda::stopGenerator()
 
 void Panda::startController(std::shared_ptr<TorqueController> controller_ptr)
 {
+  moving_ = true;
   stopController();
   _startController(controller_ptr);
   current_thread_ = std::thread(
@@ -346,6 +354,7 @@ void Panda::_runController(TorqueCallback &control_callback)
     _log("error", "Control loop interruped: %s", e.what());
     last_error_ = std::make_shared<franka::Exception>(e);
   }
+  moving_ = false;
 }
 
 void Panda::raiseError()
@@ -385,6 +394,19 @@ void Panda::joinMotionThread()
   if (current_thread_.joinable())
   {
     current_thread_.join();
+  }
+}
+
+bool Panda::isMoving()
+{
+  return moving_;
+}
+
+void Panda::refreshState() 
+{
+  if (!isMoving()) {
+    std::lock_guard<std::mutex> lock(mux_);
+    state_ = robot_->readOnce();
   }
 }
 

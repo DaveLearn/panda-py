@@ -174,6 +174,7 @@ PYBIND11_MODULE(_core, m)
          .def("enable_logging", &Panda::enableLogging, py::arg("buffer_size"))
          .def("disable_logging", &Panda::disableLogging)
          .def("get_log", &Panda::getLog)
+         .def("is_moving", &Panda::isMoving)
          .def("start_controller", &Panda::startController,
               py::call_guard<py::gil_scoped_release>(), py::arg("controller"))
          .def("stop_controller", &Panda::stopController)

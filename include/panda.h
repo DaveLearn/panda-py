@@ -10,6 +10,7 @@
 #include <mutex>
 #include <thread>
 #include <array>
+#include <atomic>
 
 #include "controllers/controller.h"
 #include "controllers/joint_limits/virtual_wall_controller.h"
@@ -108,6 +109,8 @@ class Panda {
   void stop();
 //   void stopMotion();
   void joinMotionThread();
+  bool isMoving();
+  void refreshState();
 
   Eigen::Vector3d getPosition();
   Eigen::Vector4d getOrientation(bool scalar_first = false);
@@ -148,6 +151,8 @@ class Panda {
   std::string hostname_;
   std::shared_ptr<franka::Exception> last_error_;
   std::deque<franka::RobotState> log_;
+  std::atomic<bool> moving_;
+
   bool log_enabled_ = false;
   size_t log_size_;
 };

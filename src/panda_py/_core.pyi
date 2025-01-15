@@ -251,44 +251,8 @@ class Panda:
         """
                   Get a copy of the last :py:class:`libfranka.RobotState` received from the robot.
         """
-    @typing.overload
-    def move_to_joint_position(self, waypoints: list[numpy.ndarray[tuple[typing.Literal[7], typing.Literal[1]], numpy.dtype[numpy.float64]]], speed_factor: float = 0.2, stiffness: numpy.ndarray[tuple[typing.Literal[7], typing.Literal[1]], numpy.dtype[numpy.float64]] = ..., damping: numpy.ndarray[tuple[typing.Literal[7], typing.Literal[1]], numpy.dtype[numpy.float64]] = ..., dq_threshold: float = 0.001, success_threshold: float = 0.01) -> bool:
+    def is_moving(self) -> bool:
         ...
-    @typing.overload
-    def move_to_joint_position(self, positions: numpy.ndarray[tuple[typing.Literal[7], typing.Literal[1]], numpy.dtype[numpy.float64]], speed_factor: float = 0.2, stiffness: numpy.ndarray[tuple[typing.Literal[7], typing.Literal[1]], numpy.dtype[numpy.float64]] = ..., damping: numpy.ndarray[tuple[typing.Literal[7], typing.Literal[1]], numpy.dtype[numpy.float64]] = ..., dq_threshold: float = 0.001, success_threshold: float = 0.01) -> bool:
-        ...
-    @typing.overload
-    def move_to_pose(self, positions: list[numpy.ndarray[tuple[typing.Literal[3], typing.Literal[1]], numpy.dtype[numpy.float64]]], orientations: list[numpy.ndarray[tuple[typing.Literal[4], typing.Literal[1]], numpy.dtype[numpy.float64]]], speed_factor: float = 0.2, impedance: numpy.ndarray[tuple[typing.Literal[6], typing.Literal[6]], numpy.dtype[numpy.float64]] = ..., damping_ratio: float = 1.0, nullspace_stiffness: float = 15.0, dq_threshold: float = 0.001, success_threshold: float = 0.01) -> bool:
-        """
-                       Moves the end-effector from the current pose through the provided waypoints
-                       in piece-wise linear segments. The waypoints are given as lists of positions
-                       :math:`\in \mathbb{R}^3` and orientations
-                       :math:`\mathbf q = (\vec{v},\ r),~~ \mathbf q \in \mathbb{H},~~ \vec{v}\in \mathbb{R}^3,~~ r \in \mathbb{R}`,
-                       i.e. quaternions with scalar last. The computed trajectory is time-optimal.
-        """
-    @typing.overload
-    def move_to_pose(self, position: numpy.ndarray[tuple[typing.Literal[3], typing.Literal[1]], numpy.dtype[numpy.float64]], orientation: numpy.ndarray[tuple[typing.Literal[4], typing.Literal[1]], numpy.dtype[numpy.float64]], speed_factor: float = 0.2, impedance: numpy.ndarray[tuple[typing.Literal[6], typing.Literal[6]], numpy.dtype[numpy.float64]] = ..., damping_ratio: float = 1.0, nullspace_stiffness: float = 15.0, dq_threshold: float = 0.001, success_threshold: float = 0.01) -> bool:
-        """
-                       Same as :py:func:`move_to_pose` above, but only one target pose given as
-                       position and orientation directly.
-        """
-    @typing.overload
-    def move_to_pose(self, pose: list[numpy.ndarray[tuple[typing.Literal[4], typing.Literal[4]], numpy.dtype[numpy.float64]]], speed_factor: float = 0.2, impedance: numpy.ndarray[tuple[typing.Literal[6], typing.Literal[6]], numpy.dtype[numpy.float64]] = ..., damping_ratio: float = 1.0, nullspace_stiffness: float = 15.0, dq_threshold: float = 0.001, success_threshold: float = 0.01) -> bool:
-        """
-                       Same as :py:func:`move_to_pose` above, but waypoints are given as a list of
-                       homogeneous transforms :math:`\in \mathbb{R}^{4\times 4}`.
-        """
-    @typing.overload
-    def move_to_pose(self, pose: numpy.ndarray[tuple[typing.Literal[4], typing.Literal[4]], numpy.dtype[numpy.float64]], speed_factor: float = 0.2, impedance: numpy.ndarray[tuple[typing.Literal[6], typing.Literal[6]], numpy.dtype[numpy.float64]] = ..., damping_ratio: float = 1.0, nullspace_stiffness: float = 15.0, dq_threshold: float = 0.001, success_threshold: float = 0.01) -> bool:
-        """
-                       Same as :py:func:`move_to_pose` above, but only one target pose given as
-                       homogeneous transform :math:`\in \mathbb{R}^{4\times 4}`.
-        """
-    def move_to_start(self, speed_factor: float = 0.2, stiffness: numpy.ndarray[tuple[typing.Literal[7], typing.Literal[1]], numpy.dtype[numpy.float64]] = ..., damping: numpy.ndarray[tuple[typing.Literal[7], typing.Literal[1]], numpy.dtype[numpy.float64]] = ..., dq_threshold: float = 0.001, success_threshold: float = 0.01) -> bool:
-        """
-                       Convenience function similar to :py:func:`move_to_pose`, moves the end-effector
-                       into the starting position (cf. :py:obj:`constants.JOINT_POSITION_START`).
-        """
     def raise_error(self) -> None:
         """
                   Raises a `RuntimeError` in Python when the robot has an active error.

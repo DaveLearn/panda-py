@@ -1,6 +1,6 @@
 from __future__ import annotations
-import numpy
 import numpy as np
+import numpy
 import panda_py._core
 from panda_py._core import CartesianMotion
 from panda_py._core import CartesianMotionGenerator
@@ -14,6 +14,8 @@ __all__ = ['CartesianMotion', 'CartesianMotionGenerator', 'Generator', 'JointMot
 class Panda(panda_py._core.Panda):
     def _run_generator(self, ctrl: panda_py._core.Generator):
         ...
+    def move_to_start(self):
+        ...
     def movej(self, joints: numpy.ndarray, speed: float | list[float] = 1.0):
         ...
     def movep(self, positions: numpy.ndarray, speed: float | list[float] = 1.0, reference_frame: panda_py._core.ReferenceFrame = ...):
@@ -25,4 +27,6 @@ class Panda(panda_py._core.Panda):
     def movex(self, pose: numpy.ndarray, speed: float | list[float] = 1.0, reference_frame: panda_py._core.ReferenceFrame = ...):
         ...
     def movezr(self, distance: float, speed: float = 1.0):
+        ...
+    def rotate_to_start(self):
         ...
