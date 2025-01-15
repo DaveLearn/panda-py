@@ -255,6 +255,7 @@ void Panda::startGenerator(std::shared_ptr<motion::Generator> generator_ptr)
 {
   moving_ = true;
   stopGenerator();
+  joinMotionThread();
   recover();
   _log("info", "Starting new generator (%s).", generator_ptr->name());
   this->current_generator_ = generator_ptr;

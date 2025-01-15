@@ -189,7 +189,7 @@ namespace motion
         {
             input_para_.current_position = robot_state.q;
             // input_para_.current_position = robot_state.q_d;
-            input_para_.current_velocity = toStd(Vector7d::Zero());
+            input_para_.current_velocity = robot_state.dq;
             input_para_.current_acceleration = toStd(Vector7d::Zero());
             // input_para_.current_velocity = robot_state.dq;
             // input_para_.current_acceleration = robot_state.ddq_d;
