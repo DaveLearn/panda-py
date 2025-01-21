@@ -17,7 +17,7 @@ async def main():
       trio.sleep(0.1)
 
   async with trio.open_nursery() as nursery:
-    nursery.start_soon(check_moving)
+    # nursery.start_soon(check_moving)
     await r.movej([q2, q1], speed=[0.1, 1.0])
     nursery.cancel_scope.cancel()
   

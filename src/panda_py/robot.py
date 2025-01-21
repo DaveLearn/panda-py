@@ -86,6 +86,7 @@ class Panda(_Panda):
     ctrl = CartesianMotionGenerator(keep_running=False)
     ctrl.add_waypoints(cartesian_motions)
     await self._run_generator(ctrl)
+    self.raise_error()
 
   async def movej(self, joints: np.ndarray, speed: float | list[float] = 1.0):
     joints = np.asarray(joints)
@@ -108,6 +109,7 @@ class Panda(_Panda):
     ctrl = JointMotionGenerator(keep_running=False)
     ctrl.add_waypoints(joint_motions)
     await self._run_generator(ctrl)
+    self.raise_error()
   
   async def _run_generator(self, ctrl: Generator):
     current_token = trio.lowlevel.current_trio_token()

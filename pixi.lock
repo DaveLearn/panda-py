@@ -591,8 +591,8 @@ packages:
   requires_python: '>=3.7'
 - pypi: .
   name: panda-python
-  version: 0.8.1
-  sha256: 42ee681d8ae5b719688cd61ffa1ccdf8c8ebfdd79eace85d596ccf2c80fe467f
+  version: 0.8.2
+  sha256: 7153cae42cd1b2ba6b7eb94390282cf0067513fd1fafc7d8a2fe30e1e70ec455
   requires_dist:
   - numpy
   - trio
