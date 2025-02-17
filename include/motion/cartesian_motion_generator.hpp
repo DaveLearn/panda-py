@@ -166,13 +166,12 @@ private:
 
     auto X_WE =
         Eigen::Isometry3d(Eigen::Matrix4d::Map(robot_state.O_T_EE.data()));
+    auto twist = robot_state.O_dP_EE_c;
     auto translation = X_WE.translation();
     auto rotation = X_WE.rotation();
     Eigen::Quaterniond q(rotation);
-
-    // std::cout<<"inputCurrent: "<<translation<<std::endl;
-
-    // input_para_.current_position = toStd3(translation);
+    Eigen::Quaterniond omega(0.0, twist[3], twist[4], twist[5]);
+    Eigen::Quaterniond qdot = omega * q;
 
     input_para_.current_position[0] = translation[0];
     input_para_.current_position[1] = translation[1];
@@ -182,10 +181,15 @@ private:
     input_para_.current_position[5] = q.z();
     input_para_.current_position[6] = q.w();
 
-    input_para_.current_velocity = toStd(Vector7d::Zero());
+    input_para_.current_velocity[0] = twist[0];
+    input_para_.current_velocity[1] = twist[1];
+    input_para_.current_velocity[2] = twist[2];
+    input_para_.current_velocity[3] = 0.5 * qdot.x();
+    input_para_.current_velocity[4] = 0.5 * qdot.y();
+    input_para_.current_velocity[5] = 0.5 * qdot.z();
+    input_para_.current_velocity[6] = 0.5 * qdot.w();
+    // input_para_.current_velocity = toStd(Vector7d::Zero());
     input_para_.current_acceleration = toStd(Vector7d::Zero());
-    // input_para_.current_velocity = toStd3(Eigen::Vector3d::Zero());
-    // input_para_.current_acceleration = toStd3(Eigen::Vector3d::Zero());
   }
 
   void setInputTarget(const franka::RobotState &robot_state,
@@ -215,8 +219,7 @@ private:
 
     input_para_.target_velocity = toStd(Vector7d::Zero());
     input_para_.target_acceleration = toStd(Vector7d::Zero());
-    // input_para_.target_velocity = toStd3(Eigen::Vector3d::Zero());
-    // input_para_.target_acceleration = toStd3(Eigen::Vector3d::Zero());
+
     setProfile(waypoint.velocity_rel, waypoint.acceleration_rel,
                waypoint.jerk_rel);
   }
