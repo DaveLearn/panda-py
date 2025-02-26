@@ -133,7 +133,7 @@ private:
 
   void setInputTarget(const JointMotion &waypoint) {
     input_para_.target_position = toStd(waypoint.target);
-    input_para_.target_velocity = toStd(Vector7d::Zero());
+    input_para_.target_velocity = toStd(waypoint.target_d);
     input_para_.target_acceleration = toStd(Vector7d::Zero());
     setProfile(waypoint.velocity_rel, waypoint.acceleration_rel,
                waypoint.jerk_rel);
@@ -160,7 +160,7 @@ private:
     }
     motion_finishing_ = false;
     motion_finished_ = true;
-    std::cout << "FINISHED" << std::endl;
+    // std::cout << "FINISHED" << std::endl;
     return franka::MotionFinished(franka::JointPositions(robot_state.q_d));
   }
 };
