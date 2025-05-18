@@ -78,16 +78,21 @@ struct JointMotionGenerator : public JointGenerator {
       reload_ = false;
       loadNextWaypoint(robot_state);
     }
-    result = trajectory_generator_.update(input_para_, output_para_);
-    output_para_.pass_to_input(input_para_);
-    if (result == ruckig::Result::Finished) {
-      if (!waypoints_.empty())
-        reload_ = true;
-      else if (!keep_running_)
+    
+    const int steps = std::max<int>(period.toMSec(), 1);
+    for (int i = 0; i < steps; i++) {
+      result = trajectory_generator_.update(input_para_, output_para_);
+      output_para_.pass_to_input(input_para_);
+      if (result == ruckig::Result::Finished) {
+        if (!waypoints_.empty())
+          reload_ = true;
+        else if (!keep_running_)
+          motion_finishing_ = true;
+        break;
+      } else if (result != ruckig::Result::Working) {
+        std::cout << "[rucking robot] Invalid inputs:" << std::endl;
         motion_finishing_ = true;
-    } else if (result != ruckig::Result::Working) {
-      std::cout << "[rucking robot] Invalid inputs:" << std::endl;
-      motion_finishing_ = true;
+      }
     }
     return franka::JointPositions(output_para_.new_position);
   }
